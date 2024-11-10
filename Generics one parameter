@@ -1,0 +1,28 @@
+class Gen<T>
+{
+T ob;
+Gen(T O)
+{
+	ob=O;
+}
+T getob()
+{
+	return ob;
+}
+void Showtype()
+{
+	System.out.println("Type of T is :"+ob.getClass().getName());
+}
+}
+
+class GenDemo
+{
+public static void main(String args[])
+{
+	Gen<Integer> iob;
+	iob=new Gen <Integer> (88);
+	iob.Showtype();
+	int v=iob.getob();
+	System.out.println("Autounboxed value is "+v);
+}
+}
