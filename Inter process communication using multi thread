@@ -1,0 +1,60 @@
+class ThreadCommunication {
+    private String message;
+    private boolean isMessageProduced = false;
+
+    public static void main(String[] args) {
+        ThreadCommunication communication = new ThreadCommunication();
+    
+        Producer producer = communication.new Producer();
+        producer.start();
+
+        Consumer consumer = communication.new Consumer();
+        consumer.start();
+    }
+
+    // Producer thread
+    class Producer extends Thread {
+        public void run() {
+            synchronized (ThreadCommunication.this) {
+                for (int i = 1; i <= 5; i++) {
+                    try {
+                     	message = "Message " + i + " from Producer";
+                        System.out.println("Producer: " + message);
+
+                        isMessageProduced = true;
+
+                        ThreadCommunication.this.notify();
+
+                        while (isMessageProduced) {
+                            ThreadCommunication.this.wait();
+                        }
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                }
+            }
+        }
+    }
+
+    // Consumer thread 
+    class Consumer extends Thread {
+        public void run() {
+            synchronized (ThreadCommunication.this) {
+                try {
+                    for (int i = 1; i <= 5; i++) {
+                        while (!isMessageProduced) {
+                            ThreadCommunication.this.wait();
+                        }
+                        System.out.println("Consumer: " + message);
+
+                        isMessageProduced = false;
+
+                        ThreadCommunication.this.notify();
+                    }
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        }
+    }
+}
